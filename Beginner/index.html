@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Playground</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --accent: #e8ff47;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  header h1 span { color: var(--accent); }
+
+  header p {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    margin-top: 8px;
+    letter-spacing: 0.1em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: #444; }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+
+  /* ── Shared UI ── */
+  input[type="text"], input[type="number"], textarea, select {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+
+  button {
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  button:hover { opacity: 0.85; }
+  button:active { transform: scale(0.97); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover { border-color: #555; opacity: 1; }
+
+  .output {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--accent);
+    padding: 10px 14px;
+    min-height: 36px;
+    word-break: break-all;
+  }
+
+  .row { display: flex; gap: 8px; align-items: center; }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ─────────────────────────────────────────
+     1. DOM MANIPULATION – Character Counter
+  ───────────────────────────────────────── */
+  #char-box {
+    position: relative;
+  }
+  #char-area {
+    resize: none;
+    height: 80px;
+    font-family: var(--mono);
+  }
+  #char-stats {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .stat {
+    display: flex; flex-direction: column; align-items: center;
+    background: #111; border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; flex: 1;
+  }
+  .stat-val { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+  .stat-lbl { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+
+  /* ─────────────────────────────────────────
+     2. FETCH API – IP Geolocation
+  ───────────────────────────────────────── */
+  #ip-result { line-height: 1.8; }
+  #ip-result span { color: var(--text); }
+
+  /* ─────────────────────────────────────────
+     3. LOCAL STORAGE – Note Saver
+  ───────────────────────────────────────── */
+  #note-list { max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .note-item {
+    background: #111; border: 1px solid var(--border); border-radius: 6px;
+    padding: 7px 12px; font-family: var(--mono); font-size: 0.8rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .note-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .note-item button {
+    background: transparent; color: var(--muted); font-size: 0.8rem;
+    padding: 2px 6px; border: none;
+  }
+  .note-item button:hover { color: var(--accent2); opacity: 1; }
+
+  /* ─────────────────────────────────────────
+     4. TIMERS / INTERVALS – Stopwatch
+  ───────────────────────────────────────── */
+  #sw-display {
+    font-family: var(--mono);
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    text-align: center;
+    padding: 12px 0;
+  }
+  #sw-laps { max-height: 100px; overflow-y: auto; }
+  .lap {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    padding: 3px 0; border-bottom: 1px solid #1e1e1e;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ─────────────────────────────────────────
+     5. ARRAY METHODS – Array Visualizer
+  ───────────────────────────────────────── */
+  #arr-display {
+    display: flex; gap: 6px; flex-wrap: wrap; min-height: 44px;
+    align-items: center;
+  }
+  .arr-item {
+    background: #1e1e1e; border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px;
+    font-family: var(--mono); font-size: 0.85rem;
+    color: var(--accent); transition: all 0.3s;
+  }
+  .arr-item.highlight { background: var(--accent); color: #000; }
+  #arr-log {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    min-height: 20px;
+  }
+
+  /* ─────────────────────────────────────────
+     6. CSS + JS – Color Mixer
+  ───────────────────────────────────────── */
+  #color-preview {
+    height: 60px; border-radius: 8px; transition: background 0.3s;
+    border: 1px solid var(--border);
+  }
+  .color-sliders label {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    display: flex; justify-content: space-between; margin-bottom: 4px;
+  }
+  input[type="range"] {
+    width: 100%; accent-color: var(--accent); cursor: pointer;
+  }
+  #color-hex { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; }
+
+  /* ─────────────────────────────────────────
+     7. REGEX – Pattern Tester
+  ───────────────────────────────────────── */
+  #regex-highlight {
+    background: #111; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 14px; font-family: var(--mono); font-size: 0.82rem;
+    min-height: 44px; line-height: 1.8; word-break: break-all;
+  }
+  mark { background: var(--accent); color: #000; border-radius: 3px; padding: 0 2px; }
+  #regex-count { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+
+  /* ─────────────────────────────────────────
+     8. EVENTS – Keyboard Spy
+  ───────────────────────────────────────── */
+  #key-box {
+    border: 2px dashed var(--border); border-radius: 8px; padding: 18px;
+    text-align: center; cursor: pointer; transition: border-color 0.2s;
+    outline: none;
+  }
+  #key-box:focus { border-color: var(--accent); }
+  #key-display {
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.02em;
+    min-height: 50px;
+  }
+  #key-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>JS <span>Playground</span></h1>
+  <p>// 8 micro-projects · DOM · Fetch · Storage · Timers · Arrays · Events · Regex · CSS</p>
+</header>
+
+<div class="grid">
+
+  <!-- 1. DOM MANIPULATION -->
+  <div class="card">
+    <div class="card-tag">01 · DOM Manipulation</div>
+    <h2>Character Counter</h2>
+    <div class="col">
+      <textarea id="char-area" placeholder="Start typing anything…"></textarea>
+      <div id="char-stats">
+        <div class="stat"><span class="stat-val" id="char-count">0</span><span class="stat-lbl">CHARS</span></div>
+        <div class="stat"><span class="stat-val" id="word-count">0</span><span class="stat-lbl">WORDS</span></div>
+        <div class="stat"><span class="stat-val" id="line-count">1</span><span class="stat-lbl">LINES</span></div>
+        <div class="stat"><span class="stat-val" id="read-time">0s</span><span class="stat-lbl">READ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. FETCH API -->
+  <div class="card">
+    <div class="card-tag">02 · Fetch API</div>
+    <h2>IP Geolocation</h2>
+    <div class="col">
+      <div class="output" id="ip-result" style="color:var(--muted);font-family:var(--mono);font-size:0.8rem;line-height:1.9">
+        Click below to fetch your IP info
+      </div>
+      <button onclick="fetchIP()">Fetch My IP Info</button>
+    </div>
+  </div>
+
+  <!-- 3. LOCAL STORAGE -->
+  <div class="card">
+    <div class="card-tag">03 · localStorage</div>
+    <h2>Persistent Notes</h2>
+    <div class="col">
+      <div class="row">
+        <input type="text" id="note-input" placeholder="Write a note…" />
+        <button onclick="saveNote()">Save</button>
+      </div>
+      <div id="note-list"></div>
+    </div>
+  </div>
+
+  <!-- 4. TIMERS -->
+  <div class="card">
+    <div class="card-tag">04 · setInterval</div>
+    <h2>Stopwatch</h2>
+    <div class="col">
+      <div id="sw-display">00:00.00</div>
+      <div class="row" style="justify-content:center;gap:10px">
+        <button id="sw-btn" onclick="swToggle()">Start</button>
+        <button class="btn-ghost" onclick="swLap()">Lap</button>
+        <button class="btn-ghost" onclick="swReset()">Reset</button>
+      </div>
+      <div id="sw-laps"></div>
+    </div>
+  </div>
+
+  <!-- 5. ARRAY METHODS -->
+  <div class="card">
+    <div class="card-tag">05 · Array Methods</div>
+    <h2>Array Visualizer</h2>
+    <div class="col">
+      <div class="row">
+        <input type="number" id="arr-input" placeholder="Add number…" style="max-width:140px"/>
+        <button onclick="arrAdd()">Push</button>
+        <button class="btn-ghost" onclick="arrPop()">Pop</button>
+      </div>
+      <div id="arr-display"><span style="color:var(--muted);font-family:var(--mono);font-size:0.8rem">[ empty ]</span></div>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <button class="btn-ghost" style="font-size:0.75rem;padding:6px 10px" onclick="arrMethod('sort')">Sort</button>
+        <button class="btn-ghost" style="font-size:0.75rem;padding:6px 10px" onclick="arrMethod('reverse')">Reverse</button>
+        <button class="btn-ghost" style="font-size:0.75rem;padding:6px 10px" onclick="arrMethod('filter-even')">Filter Even</button>
+        <button class="btn-ghost" style="font-size:0.75rem;padding:6px 10px" onclick="arrMethod('map-x2')">Map ×2</button>
+        <button class="btn-ghost" style="font-size:0.75rem;padding:6px 10px" onclick="arrMethod('sum')">Sum</button>
+      </div>
+      <div id="arr-log"></div>
+    </div>
+  </div>
+
+  <!-- 6. COLOR MIXER -->
+  <div class="card">
+    <div class="card-tag">06 · CSS + JS</div>
+    <h2>RGB Color Mixer</h2>
+    <div class="col">
+      <div id="color-preview"></div>
+      <div class="color-sliders col" style="gap:8px">
+        <div>
+          <label>R <span id="r-val">128</span></label>
+          <input type="range" id="r-slider" min="0" max="255" value="128" oninput="updateColor()">
+        </div>
+        <div>
+          <label>G <span id="g-val">128</span></label>
+          <input type="range" id="g-slider" min="0" max="255" value="128" oninput="updateColor()">
+        </div>
+        <div>
+          <label>B <span id="b-val">128</span></label>
+          <input type="range" id="b-slider" min="0" max="255" value="128" oninput="updateColor()">
+        </div>
+      </div>
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <span id="color-hex">#808080</span>
+        <button onclick="copyHex()">Copy HEX</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. REGEX -->
+  <div class="card">
+    <div class="card-tag">07 · RegEx</div>
+    <h2>Pattern Tester</h2>
+    <div class="col">
+      <input type="text" id="regex-pattern" placeholder="Regex pattern (e.g. \d+)" oninput="testRegex()" />
+      <input type="text" id="regex-input" placeholder="Test string…" oninput="testRegex()" />
+      <div id="regex-highlight">Matches will highlight here</div>
+      <div id="regex-count"></div>
+    </div>
+  </div>
+
+  <!-- 8. EVENTS – KEYBOARD SPY -->
+  <div class="card">
+    <div class="card-tag">08 · Event Listeners</div>
+    <h2>Keyboard Spy</h2>
+    <div class="col">
+      <div id="key-box" tabindex="0" onclick="this.focus()">
+        <div style="color:var(--muted);font-family:var(--mono);font-size:0.75rem;margin-bottom:10px">Click here, then press a key</div>
+        <div id="key-display">—</div>
+        <div id="key-meta"></div>
+      </div>
+      <div id="key-history" class="output" style="min-height:44px;color:var(--text);line-height:1.9;font-size:0.75rem"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// 1. DOM MANIPULATION – Character Counter
+// ══════════════════════════════════════════════
+const charArea = document.getElementById('char-area');
+charArea.addEventListener('input', () => {
+  const val = charArea.value;
+  const chars = val.length;
+  const words = val.trim() === '' ? 0 : val.trim().split(/\s+/).length;
+  const lines = val.split('\n').length;
+  const readSec = Math.round((words / 200) * 60);
+  document.getElementById('char-count').textContent = chars;
+  document.getElementById('word-count').textContent = words;
+  document.getElementById('line-count').textContent = lines;
+  document.getElementById('read-time').textContent = readSec < 60 ? readSec + 's' : Math.ceil(readSec/60) + 'm';
+});
+
+// ══════════════════════════════════════════════
+// 2. FETCH API – IP Geolocation
+// ══════════════════════════════════════════════
+async function fetchIP() {
+  const el = document.getElementById('ip-result');
+  el.style.color = 'var(--muted)';
+  el.textContent = 'Fetching…';
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    el.style.color = '';
+    el.innerHTML = `
+      <span style="color:var(--accent)">IP:</span> <span>${data.ip}</span><br>
+      <span style="color:var(--accent)">City:</span> <span>${data.city || '—'}</span><br>
+      <span style="color:var(--accent)">Country:</span> <span>${data.country_name || '—'}</span><br>
+      <span style="color:var(--accent)">ISP:</span> <span>${data.org || '—'}</span>
+    `;
+  } catch(e) {
+    el.textContent = 'Error: ' + e.message;
+    el.style.color = 'var(--accent2)';
+  }
+}
+
+// ══════════════════════════════════════════════
+// 3. LOCAL STORAGE – Notes
+// ══════════════════════════════════════════════
+let notes = JSON.parse(localStorage.getItem('js-playground-notes') || '[]');
+
+function renderNotes() {
+  const list = document.getElementById('note-list');
+  list.innerHTML = notes.length === 0
+    ? '<span style="color:var(--muted);font-family:var(--mono);font-size:0.78rem">No notes yet</span>'
+    : notes.map((n, i) => `
+      <div class="note-item">
+        <span>${n}</span>
+        <button onclick="deleteNote(${i})">✕</button>
+      </div>`).join('');
+}
+
+function saveNote() {
+  const input = document.getElementById('note-input');
+  const val = input.value.trim();
+  if (!val) return;
+  notes.unshift(val);
+  localStorage.setItem('js-playground-notes', JSON.stringify(notes));
+  input.value = '';
+  renderNotes();
+}
+
+function deleteNote(i) {
+  notes.splice(i, 1);
+  localStorage.setItem('js-playground-notes', JSON.stringify(notes));
+  renderNotes();
+}
+
+document.getElementById('note-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveNote();
+});
+
+renderNotes();
+
+// ══════════════════════════════════════════════
+// 4. TIMERS / INTERVALS – Stopwatch
+// ══════════════════════════════════════════════
+let swRunning = false, swStart = 0, swElapsed = 0, swInterval = null, swLapCount = 0;
+
+function swFormat(ms) {
+  const m = String(Math.floor(ms / 60000)).padStart(2, '0');
+  const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+  const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+  return `${m}:${s}.${cs}`;
+}
+
+function swToggle() {
+  if (!swRunning) {
+    swStart = Date.now() - swElapsed;
+    swInterval = setInterval(() => {
+      swElapsed = Date.now() - swStart;
+      document.getElementById('sw-display').textContent = swFormat(swElapsed);
+    }, 16);
+    document.getElementById('sw-btn').textContent = 'Pause';
+    swRunning = true;
+  } else {
+    clearInterval(swInterval);
+    document.getElementById('sw-btn').textContent = 'Resume';
+    swRunning = false;
+  }
+}
+
+function swLap() {
+  if (!swRunning) return;
+  swLapCount++;
+  const div = document.createElement('div');
+  div.className = 'lap';
+  div.innerHTML = `<span>Lap ${swLapCount}</span><span>${swFormat(swElapsed)}</span>`;
+  document.getElementById('sw-laps').prepend(div);
+}
+
+function swReset() {
+  clearInterval(swInterval);
+  swRunning = false; swElapsed = 0; swLapCount = 0;
+  document.getElementById('sw-display').textContent = '00:00.00';
+  document.getElementById('sw-btn').textContent = 'Start';
+  document.getElementById('sw-laps').innerHTML = '';
+}
+
+// ══════════════════════════════════════════════
+// 5. ARRAY METHODS
+// ══════════════════════════════════════════════
+let arr = [];
+
+function renderArr(highlight = []) {
+  const el = document.getElementById('arr-display');
+  if (arr.length === 0) {
+    el.innerHTML = '<span style="color:var(--muted);font-family:var(--mono);font-size:0.8rem">[ empty ]</span>';
+    return;
+  }
+  el.innerHTML = arr.map((v, i) =>
+    `<div class="arr-item${highlight.includes(i) ? ' highlight' : ''}">${v}</div>`
+  ).join('');
+}
+
+function arrAdd() {
+  const v = document.getElementById('arr-input').value;
+  if (v === '') return;
+  arr.push(Number(v));
+  document.getElementById('arr-input').value = '';
+  document.getElementById('arr-log').textContent = `push(${v}) → length: ${arr.length}`;
+  renderArr([arr.length - 1]);
+}
+
+function arrPop() {
+  if (!arr.length) return;
+  const v = arr.pop();
+  document.getElementById('arr-log').textContent = `pop() → removed: ${v}`;
+  renderArr();
+}
+
+function arrMethod(m) {
+  if (!arr.length) return;
+  let log = '';
+  if (m === 'sort') { arr.sort((a,b) => a-b); log = 'sort() ascending'; }
+  if (m === 'reverse') { arr.reverse(); log = 'reverse()'; }
+  if (m === 'filter-even') { arr = arr.filter(x => x % 2 === 0); log = 'filter(x => x%2===0)'; }
+  if (m === 'map-x2') { arr = arr.map(x => x * 2); log = 'map(x => x*2)'; }
+  if (m === 'sum') {
+    const s = arr.reduce((a, b) => a + b, 0);
+    log = `reduce → sum = ${s}`;
+    document.getElementById('arr-log').textContent = log;
+    renderArr(arr.map((_, i) => i));
+    return;
+  }
+  document.getElementById('arr-log').textContent = log;
+  renderArr();
+}
+
+// ══════════════════════════════════════════════
+// 6. COLOR MIXER
+// ══════════════════════════════════════════════
+function toHex(v) { return Number(v).toString(16).padStart(2, '0'); }
+
+function updateColor() {
+  const r = document.getElementById('r-slider').value;
+  const g = document.getElementById('g-slider').value;
+  const b = document.getElementById('b-slider').value;
+  document.getElementById('r-val').textContent = r;
+  document.getElementById('g-val').textContent = g;
+  document.getElementById('b-val').textContent = b;
+  const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  document.getElementById('color-preview').style.background = hex;
+  document.getElementById('color-hex').textContent = hex.toUpperCase();
+}
+
+function copyHex() {
+  const hex = document.getElementById('color-hex').textContent;
+  navigator.clipboard.writeText(hex);
+  const btn = event.target;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy HEX', 1200);
+}
+
+updateColor();
+
+// ══════════════════════════════════════════════
+// 7. REGEX
+// ══════════════════════════════════════════════
+function testRegex() {
+  const pattern = document.getElementById('regex-pattern').value;
+  const text = document.getElementById('regex-input').value;
+  const out = document.getElementById('regex-highlight');
+  const count = document.getElementById('regex-count');
+
+  if (!pattern || !text) {
+    out.textContent = text || 'Matches will highlight here';
+    count.textContent = '';
+    return;
+  }
+  try {
+    const re = new RegExp(pattern, 'g');
+    const matches = [...text.matchAll(re)];
+    count.textContent = `${matches.length} match${matches.length !== 1 ? 'es' : ''} found`;
+    out.innerHTML = text.replace(re, m => `<mark>${m}</mark>`);
+  } catch(e) {
+    out.textContent = 'Invalid regex';
+    count.textContent = '';
+  }
+}
+
+// ══════════════════════════════════════════════
+// 8. KEYBOARD SPY
+// ══════════════════════════════════════════════
+const keyBox = document.getElementById('key-box');
+const keyHistory = [];
+
+keyBox.addEventListener('keydown', e => {
+  e.preventDefault();
+  const key = e.key === ' ' ? 'Space' : e.key;
+  document.getElementById('key-display').textContent = key.length === 1 ? key : `[${key}]`;
+  const meta = [
+    e.ctrlKey && 'Ctrl',
+    e.shiftKey && 'Shift',
+    e.altKey && 'Alt',
+    e.metaKey && 'Meta',
+    `code: ${e.code}`,
+    `keyCode: ${e.keyCode}`
+  ].filter(Boolean).join('  ·  ');
+  document.getElementById('key-meta').textContent = meta;
+
+  keyHistory.unshift(key.length === 1 ? key : `[${key}]`);
+  if (keyHistory.length > 20) keyHistory.pop();
+  document.getElementById('key-history').innerHTML =
+    keyHistory.map(k => `<span style="opacity:${1 - keyHistory.indexOf(k)*0.05}">${k}</span>`).join(' ');
+});
+</script>
+</body>
+</html>

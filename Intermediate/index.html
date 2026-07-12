@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Intermediate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fff;
+    --border: #d9d2c5;
+    --ink: #1a1612;
+    --muted: #9a9080;
+    --accent: #c0392b;
+    --accent2: #2471a3;
+    --accent3: #1e8449;
+    --mono: 'DM Mono', monospace;
+    --display: 'Unbounded', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+    background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: 28px 28px;
+  }
+
+  header {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  header h1 em { color: var(--accent); font-style: normal; }
+
+  header p {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    padding: 24px;
+    box-shadow: 4px 4px 0 var(--ink);
+    position: relative;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s }
+  .card:nth-child(2) { animation-delay: 0.10s }
+  .card:nth-child(3) { animation-delay: 0.15s }
+  .card:nth-child(4) { animation-delay: 0.20s }
+  .card:nth-child(5) { animation-delay: 0.25s }
+  .card:nth-child(6) { animation-delay: 0.30s }
+  .card:nth-child(7) { animation-delay: 0.35s }
+  .card:nth-child(8) { animation-delay: 0.40s }
+
+  .card-tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .card h2 {
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+    color: var(--ink);
+  }
+
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: center; }
+
+  input[type="text"], input[type="number"], textarea, select {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: var(--ink); }
+
+  button {
+    background: var(--ink);
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    color: var(--bg);
+    cursor: pointer;
+    font-family: var(--display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 8px 14px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  button:hover { background: var(--accent); border-color: var(--accent); }
+  button:active { transform: translate(1px,1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn-outline:hover { background: var(--ink); color: var(--bg); }
+
+  .output {
+    background: var(--ink);
+    color: #e8ff47;
+    border-radius: 2px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    padding: 10px 14px;
+    min-height: 36px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.65rem;
+    font-family: var(--display);
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── 1. Closures & Counter Factory ── */
+  #counter-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .counter-box {
+    flex: 1; min-width: 80px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px; padding: 10px;
+    text-align: center;
+  }
+  .counter-box .c-val {
+    font-family: var(--display);
+    font-size: 2rem; font-weight: 900;
+    display: block; margin-bottom: 6px;
+  }
+  .counter-box .c-label { font-size: 0.65rem; color: var(--muted); display: block; margin-bottom: 8px; }
+  .counter-box button { width: 100%; font-size: 0.65rem; padding: 5px; }
+
+  /* ── 2. Promise Chain ── */
+  .promise-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .step-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--border); flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .step-dot.pending { background: #f39c12; animation: pulse 1s infinite; }
+  .step-dot.done    { background: var(--accent3); }
+  .step-dot.error   { background: var(--accent); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── 3. Class-based Task Manager ── */
+  .task-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px; font-size: 0.8rem;
+    transition: opacity 0.2s;
+  }
+  .task-item.done { opacity: 0.4; text-decoration: line-through; }
+  .task-item input[type="checkbox"] { cursor: pointer; accent-color: var(--accent3); }
+  .task-item span { flex: 1; }
+  .task-item .prio {
+    font-size: 0.6rem; padding: 1px 6px;
+    border-radius: 2px; font-weight: 500;
+  }
+  .prio-high { background: #fde8e8; color: var(--accent); }
+  .prio-mid  { background: #fef5e7; color: #e67e22; }
+  .prio-low  { background: #e8f8ef; color: var(--accent3); }
+  #task-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  #task-stats { font-size: 0.72rem; color: var(--muted); }
+
+  /* ── 4. Debounce ── */
+  #debounce-log {
+    max-height: 120px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .log-line {
+    font-size: 0.75rem; padding: 4px 8px;
+    border-left: 3px solid var(--border);
+    font-family: var(--mono);
+  }
+  .log-line.fired { border-color: var(--accent3); color: var(--accent3); }
+  .log-line.typed { border-color: var(--border); color: var(--muted); }
+  #debounce-count { font-size: 0.72rem; color: var(--muted); }
+
+  /* ── 5. Event Delegation ── */
+  #dyn-list { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
+  .dyn-item {
+    padding: 8px 12px; background: var(--bg);
+    border: 1.5px solid var(--border); border-radius: 2px;
+    font-size: 0.8rem; cursor: pointer;
+    display: flex; justify-content: space-between;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .dyn-item:hover { border-color: var(--ink); }
+  .dyn-item.selected { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  #del-event-log { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); }
+
+  /* ── 6. Intersection Observer ── */
+  #obs-scroll-area {
+    height: 140px; overflow-y: scroll;
+    border: 1.5px solid var(--border);
+    border-radius: 2px; padding: 10px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .obs-item {
+    height: 44px; border: 1.5px dashed var(--border);
+    border-radius: 2px; display: flex;
+    align-items: center; padding: 0 12px;
+    font-size: 0.78rem; color: var(--muted);
+    transition: all 0.3s; flex-shrink: 0;
+  }
+  .obs-item.visible {
+    background: var(--ink); color: var(--bg);
+    border-color: var(--ink); border-style: solid;
+  }
+  #obs-log { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); }
+
+  /* ── 7. Async / Retry Pattern ── */
+  .retry-step {
+    font-size: 0.76rem; font-family: var(--mono);
+    padding: 4px 0; display: flex; gap: 8px; align-items: center;
+  }
+  .r-icon { font-size: 0.9rem; }
+
+  /* ── 8. State Machine ── */
+  .state-diagram {
+    display: flex; gap: 6px; align-items: center;
+    flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .state-node {
+    border: 1.5px solid var(--border);
+    border-radius: 2px; padding: 5px 10px;
+    font-size: 0.72rem; font-family: var(--display);
+    font-weight: 700; letter-spacing: 0.04em;
+    transition: all 0.2s; color: var(--muted);
+  }
+  .state-node.active {
+    background: var(--ink); color: var(--bg);
+    border-color: var(--ink);
+  }
+  .state-arrow { color: var(--muted); font-size: 0.9rem; }
+  #sm-log { max-height: 90px; overflow-y: auto; }
+  .sm-entry { font-size: 0.72rem; font-family: var(--mono); padding: 2px 0; color: var(--muted); }
+  .sm-entry.current { color: var(--ink); font-weight: 500; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>JS <em>Intermediate</em></h1>
+    <p style="margin-top:6px">// 8 concepts · closures · promises · classes · debounce · delegation · observers · async patterns · state machines</p>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- 1. CLOSURES -->
+  <div class="card">
+    <div class="card-tag">01 · Closures</div>
+    <h2>Counter Factory</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:14px">Each counter is an independent closure — same function, isolated state.</p>
+    <div id="counter-grid"></div>
+    <div style="margin-top:12px">
+      <button onclick="addCounter()">+ New Counter</button>
+    </div>
+  </div>
+
+  <!-- 2. PROMISE CHAIN -->
+  <div class="card">
+    <div class="card-tag">02 · Promises</div>
+    <h2>Async Pipeline</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:14px">Simulates a 3-step async pipeline with real delays. Each step depends on the previous.</p>
+    <div id="promise-steps" class="col"></div>
+    <div style="margin-top:12px" class="row">
+      <button onclick="runPipeline()">Run Pipeline</button>
+      <button class="btn-outline" onclick="runPipeline(true)">Run with Error</button>
+    </div>
+  </div>
+
+  <!-- 3. CLASSES -->
+  <div class="card">
+    <div class="card-tag">03 · ES6 Classes</div>
+    <h2>Task Manager</h2>
+    <div class="col">
+      <div class="row">
+        <input type="text" id="task-input" placeholder="New task…" style="flex:1"/>
+        <select id="task-prio" style="width:auto">
+          <option value="high">High</option>
+          <option value="mid" selected>Mid</option>
+          <option value="low">Low</option>
+        </select>
+        <button onclick="addTask()">Add</button>
+      </div>
+      <div id="task-list"></div>
+      <div id="task-stats"></div>
+    </div>
+  </div>
+
+  <!-- 4. DEBOUNCE -->
+  <div class="card">
+    <div class="card-tag">04 · Debounce / Throttle</div>
+    <h2>Search Debouncer</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">Type fast — the API call only fires 600ms after you stop.</p>
+    <div class="col">
+      <input type="text" id="debounce-input" placeholder="Type something quickly…" />
+      <div id="debounce-count"></div>
+      <div id="debounce-log"></div>
+    </div>
+  </div>
+
+  <!-- 5. EVENT DELEGATION -->
+  <div class="card">
+    <div class="card-tag">05 · Event Delegation</div>
+    <h2>Dynamic List</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">One listener on the parent handles all children — even ones added after mount.</p>
+    <div class="col">
+      <div class="row">
+        <input type="text" id="del-input" placeholder="Add item…"/>
+        <button onclick="delAddItem()">Add</button>
+      </div>
+      <div id="dyn-list"></div>
+      <div id="del-event-log">Click an item to select it</div>
+    </div>
+  </div>
+
+  <!-- 6. INTERSECTION OBSERVER -->
+  <div class="card">
+    <div class="card-tag">06 · Intersection Observer</div>
+    <h2>Scroll Visibility</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">Items activate when they enter the viewport — no scroll event listeners.</p>
+    <div id="obs-scroll-area"></div>
+    <div id="obs-log" style="margin-top:8px">Scroll the box above ↑</div>
+  </div>
+
+  <!-- 7. ASYNC RETRY -->
+  <div class="card">
+    <div class="card-tag">07 · Async / Retry Pattern</div>
+    <h2>Flaky API Retry</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">Retries a failing async call up to 3×, with exponential backoff.</p>
+    <div id="retry-log" class="col" style="gap:2px;min-height:80px"></div>
+    <div style="margin-top:12px" class="row">
+      <button onclick="runRetry(0.3)">Run (30% success)</button>
+      <button class="btn-outline" onclick="runRetry(0.9)">Run (90% success)</button>
+    </div>
+  </div>
+
+  <!-- 8. STATE MACHINE -->
+  <div class="card">
+    <div class="card-tag">08 · State Machines</div>
+    <h2>Traffic Light FSM</h2>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">A finite state machine — each state only knows its valid transitions.</p>
+    <div class="state-diagram" id="sm-diagram"></div>
+    <div id="sm-light" style="font-size:3rem;text-align:center;margin:8px 0">🔴</div>
+    <div class="row" style="justify-content:center;gap:8px;margin-bottom:12px">
+      <button onclick="smNext()">Next State</button>
+      <button class="btn-outline" onclick="smAuto()">Auto</button>
+      <button class="btn-outline" onclick="smStop()">Stop</button>
+    </div>
+    <div id="sm-log"></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// 1. CLOSURES — Counter Factory
+// ══════════════════════════════════════════════
+function makeCounter(id, step = 1) {
+  let count = 0; // private state via closure
+  return {
+    increment: () => { count += step; renderCounter(id, count, step); },
+    decrement: () => { count -= step; renderCounter(id, count, step); },
+    reset:     () => { count = 0;    renderCounter(id, count, step); },
+    getCount:  () => count
+  };
+}
+
+const counters = {};
+let counterIdSeq = 0;
+
+function renderCounter(id, val, step) {
+  const el = document.querySelector(`[data-counter="${id}"] .c-val`);
+  if (el) el.textContent = val;
+}
+
+function addCounter() {
+  const id = ++counterIdSeq;
+  const step = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
+  counters[id] = makeCounter(id, step);
+  const box = document.createElement('div');
+  box.className = 'counter-box';
+  box.dataset.counter = id;
+  box.innerHTML = `
+    <span class="c-val">0</span>
+    <span class="c-label">step: ${step}</span>
+    <div style="display:flex;gap:4px">
+      <button onclick="counters[${id}].decrement()" style="flex:1">−</button>
+      <button onclick="counters[${id}].increment()" style="flex:1">+</button>
+    </div>
+  `;
+  document.getElementById('counter-grid').appendChild(box);
+}
+
+addCounter(); addCounter(); // start with 2
+
+// ══════════════════════════════════════════════
+// 2. PROMISES — Async Pipeline
+// ══════════════════════════════════════════════
+const pipelineSteps = [
+  { label: 'Authenticate user',   delay: 800  },
+  { label: 'Fetch user data',     delay: 1200 },
+  { label: 'Render dashboard',    delay: 600  },
+];
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function setPipelineStep(i, state, msg = '') {
+  const steps = document.querySelectorAll('.promise-step');
+  const dot = steps[i].querySelector('.step-dot');
+  const txt = steps[i].querySelector('.step-txt');
+  dot.className = 'step-dot ' + state;
+  if (msg) txt.textContent = msg;
+}
+
+async function runPipeline(withError = false) {
+  // reset
+  document.getElementById('promise-steps').innerHTML =
+    pipelineSteps.map((s, i) => `
+      <div class="promise-step">
+        <div class="step-dot"></div>
+        <span class="step-txt">${s.label}</span>
+      </div>`).join('');
+
+  try {
+    for (let i = 0; i < pipelineSteps.length; i++) {
+      setPipelineStep(i, 'pending', pipelineSteps[i].label + '…');
+      await delay(pipelineSteps[i].delay);
+      if (withError && i === 1) throw new Error('Network timeout on step ' + (i+1));
+      setPipelineStep(i, 'done', '✓ ' + pipelineSteps[i].label);
+    }
+  } catch(e) {
+    const steps = document.querySelectorAll('.promise-step');
+    steps.forEach((s, i) => {
+      if (s.querySelector('.step-dot').classList.contains('pending')) {
+        setPipelineStep(i, 'error', '✕ ' + e.message);
+      }
+    });
+  }
+}
+
+runPipeline();
+
+// ══════════════════════════════════════════════
+// 3. CLASSES — Task Manager
+// ══════════════════════════════════════════════
+class Task {
+  #id; #title; #priority; #done;
+  constructor(title, priority) {
+    this.#id = Date.now() + Math.random();
+    this.#title = title;
+    this.#priority = priority;
+    this.#done = false;
+  }
+  toggle()  { this.#done = !this.#done; }
+  get id()       { return this.#id; }
+  get title()    { return this.#title; }
+  get priority() { return this.#priority; }
+  get done()     { return this.#done; }
+}
+
+class TaskManager {
+  #tasks = [];
+  add(title, priority) { this.#tasks.push(new Task(title, priority)); }
+  toggle(id) {
+    const t = this.#tasks.find(t => t.id === id);
+    if (t) t.toggle();
+  }
+  remove(id) { this.#tasks = this.#tasks.filter(t => t.id !== id); }
+  get all()  { return this.#tasks; }
+  get stats(){ 
+    return { total: this.#tasks.length, done: this.#tasks.filter(t=>t.done).length };
+  }
+}
+
+const tm = new TaskManager();
+tm.add('Read about Promises', 'high');
+tm.add('Build a closure example', 'mid');
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  const { total, done } = tm.stats;
+  list.innerHTML = tm.all.map(t => `
+    <div class="task-item ${t.done ? 'done' : ''}" data-id="${t.id}">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})"/>
+      <span>${t.title}</span>
+      <span class="prio prio-${t.priority}">${t.priority}</span>
+      <button class="btn-outline" style="padding:2px 8px;font-size:0.65rem" onclick="removeTask(${t.id})">✕</button>
+    </div>`).join('') || '<span style="color:var(--muted);font-size:0.78rem">No tasks</span>';
+  document.getElementById('task-stats').textContent =
+    `${done}/${total} complete · ${total - done} remaining`;
+}
+
+function addTask() {
+  const input = document.getElementById('task-input');
+  const prio  = document.getElementById('task-prio').value;
+  if (!input.value.trim()) return;
+  tm.add(input.value.trim(), prio);
+  input.value = '';
+  renderTasks();
+}
+function toggleTask(id) { tm.toggle(id); renderTasks(); }
+function removeTask(id) { tm.remove(id); renderTasks(); }
+document.getElementById('task-input').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
+renderTasks();
+
+// ══════════════════════════════════════════════
+// 4. DEBOUNCE
+// ══════════════════════════════════════════════
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+let keystrokeCount = 0, apiCallCount = 0;
+
+const logDebounce = debounce((val) => {
+  apiCallCount++;
+  const log = document.getElementById('debounce-log');
+  const line = document.createElement('div');
+  line.className = 'log-line fired';
+  line.textContent = `[API #${apiCallCount}] search("${val}") fired`;
+  log.prepend(line);
+  if (log.children.length > 8) log.removeChild(log.lastChild);
+  updateDebounceCount();
+}, 600);
+
+function updateDebounceCount() {
+  document.getElementById('debounce-count').textContent =
+    `${keystrokeCount} keystrokes → ${apiCallCount} API calls saved ${keystrokeCount - apiCallCount}`;
+}
+
+document.getElementById('debounce-input').addEventListener('input', function() {
+  keystrokeCount++;
+  const log = document.getElementById('debounce-log');
+  const line = document.createElement('div');
+  line.className = 'log-line typed';
+  line.textContent = `keypress #${keystrokeCount} — timer reset`;
+  log.prepend(line);
+  if (log.children.length > 8) log.removeChild(log.lastChild);
+  updateDebounceCount();
+  logDebounce(this.value);
+});
+
+// ══════════════════════════════════════════════
+// 5. EVENT DELEGATION
+// ══════════════════════════════════════════════
+let delSelected = null;
+const defaultItems = ['JavaScript closures', 'Event loop', 'Prototype chain', 'Async/Await'];
+
+const dynList = document.getElementById('dyn-list');
+
+// ONE listener on the parent — handles all children
+dynList.addEventListener('click', e => {
+  const item = e.target.closest('.dyn-item');
+  if (!item) return;
+  document.querySelectorAll('.dyn-item').forEach(i => i.classList.remove('selected'));
+  item.classList.add('selected');
+  delSelected = item.dataset.val;
+  document.getElementById('del-event-log').textContent =
+    `Selected: "${delSelected}" via delegation (not direct listener)`;
+});
+
+function delAddItem(text) {
+  const input = document.getElementById('del-input');
+  const val = text || input.value.trim();
+  if (!val) return;
+  const el = document.createElement('div');
+  el.className = 'dyn-item';
+  el.dataset.val = val;
+  el.innerHTML = `<span>${val}</span><span style="font-size:0.65rem;color:var(--muted)">click me</span>`;
+  dynList.appendChild(el);
+  input.value = '';
+}
+
+defaultItems.forEach(i => delAddItem(i));
+document.getElementById('del-input').addEventListener('keydown', e => { if(e.key==='Enter') delAddItem(); });
+
+// ══════════════════════════════════════════════
+// 6. INTERSECTION OBSERVER
+// ══════════════════════════════════════════════
+const scrollArea = document.getElementById('obs-scroll-area');
+const obsItems = Array.from({length: 10}, (_, i) => {
+  const el = document.createElement('div');
+  el.className = 'obs-item';
+  el.textContent = `Item ${i + 1} — not visible`;
+  el.dataset.idx = i;
+  scrollArea.appendChild(el);
+  return el;
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      entry.target.textContent = `Item ${Number(entry.target.dataset.idx)+1} — 👁 visible`;
+      document.getElementById('obs-log').textContent =
+        `Item ${Number(entry.target.dataset.idx)+1} entered viewport`;
+    } else {
+      entry.target.classList.remove('visible');
+      entry.target.textContent = `Item ${Number(entry.target.dataset.idx)+1} — not visible`;
+    }
+  });
+}, { root: scrollArea, threshold: 0.5 });
+
+obsItems.forEach(el => observer.observe(el));
+
+// ══════════════════════════════════════════════
+// 7. ASYNC RETRY PATTERN
+// ══════════════════════════════════════════════
+function flakyAPI(successRate) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      Math.random() < successRate ? resolve({ data: 'user_42' }) : reject(new Error('503 Service Unavailable'));
+    }, 400 + Math.random() * 400);
+  });
+}
+
+async function withRetry(fn, maxAttempts = 3, baseDelay = 500) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const result = await fn();
+      return { result, attempt };
+    } catch(err) {
+      if (attempt === maxAttempts) throw err;
+      await delay(baseDelay * attempt); // exponential backoff
+      throw err; // will re-enter loop
+    }
+  }
+}
+
+async function runRetry(successRate) {
+  const log = document.getElementById('retry-log');
+  log.innerHTML = '';
+  const append = (icon, msg, cls='') => {
+    const el = document.createElement('div');
+    el.className = 'retry-step';
+    el.innerHTML = `<span class="r-icon">${icon}</span><span style="font-size:0.76rem;${cls}">${msg}</span>`;
+    log.appendChild(el);
+  };
+
+  let attempt = 0;
+  const maxAttempts = 3;
+
+  async function attempt_fn() {
+    attempt++;
+    append('⏳', `Attempt ${attempt}/${maxAttempts}…`);
+    try {
+      const res = await flakyAPI(successRate);
+      append('✅', `Success on attempt ${attempt} → data: "${res.data}"`, 'color:var(--accent3)');
+    } catch(err) {
+      append('❌', `Failed: ${err.message}`, 'color:var(--accent)');
+      if (attempt < maxAttempts) {
+        const wait = 500 * attempt;
+        append('⏸', `Backoff ${wait}ms before retry…`, 'color:var(--muted)');
+        await delay(wait);
+        await attempt_fn();
+      } else {
+        append('🚫', `All ${maxAttempts} attempts failed. Giving up.`, 'color:var(--accent);font-weight:500');
+      }
+    }
+  }
+
+  await attempt_fn();
+}
+
+// ══════════════════════════════════════════════
+// 8. STATE MACHINE — Traffic Light
+// ══════════════════════════════════════════════
+const states = {
+  red:    { emoji: '🔴', label: 'RED',    next: 'green',  duration: 2000 },
+  green:  { emoji: '🟢', label: 'GREEN',  next: 'yellow', duration: 2000 },
+  yellow: { emoji: '🟡', label: 'YELLOW', next: 'red',    duration: 1000 },
+};
+
+let currentState = 'red';
+let smAutoTimer = null;
+let smHistory = [];
+
+function smTransition(to) {
+  if (!states[to]) return;
+  currentState = to;
+  smHistory.unshift(`→ ${states[to].label}`);
+  if (smHistory.length > 6) smHistory.pop();
+  renderSM();
+}
+
+function smNext() {
+  smTransition(states[currentState].next);
+}
+
+function smAuto() {
+  smStop();
+  function tick() {
+    smNext();
+    smAutoTimer = setTimeout(tick, states[currentState].duration);
+  }
+  smAutoTimer = setTimeout(tick, states[currentState].duration);
+}
+
+function smStop() {
+  clearTimeout(smAutoTimer);
+  smAutoTimer = null;
+}
+
+function renderSM() {
+  document.getElementById('sm-light').textContent = states[currentState].emoji;
+
+  document.getElementById('sm-diagram').innerHTML = Object.keys(states).map(s => `
+    <div class="state-node ${s === currentState ? 'active' : ''}">${states[s].label}</div>
+    ${s !== 'yellow' ? '<span class="state-arrow">→</span>' : ''}
+  `).join('');
+
+  document.getElementById('sm-log').innerHTML = smHistory.map((h, i) =>
+    `<div class="sm-entry ${i===0?'current':''}">${h}</div>`).join('');
+}
+
+smHistory.push('→ RED');
+renderSM();
+</script>
+</body>
+</html>

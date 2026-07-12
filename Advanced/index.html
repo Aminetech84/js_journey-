@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Advanced</title>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;600;700&family=Clash+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0d1220;
+    --surface2: #111827;
+    --border: #1e2d45;
+    --border2: #2a3f5f;
+    --text: #e2eaf5;
+    --muted: #4a6080;
+    --dim: #2a3f5f;
+    --cyan: #00d4ff;
+    --green: #00ff9d;
+    --orange: #ff8c42;
+    --red: #ff4757;
+    --purple: #a855f7;
+    --mono: 'Azeret Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(0,212,255,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(168,85,247,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  header {
+    max-width: 1160px;
+    margin: 0 auto 48px;
+    position: relative;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+
+  header h1 {
+    font-family: var(--display);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  header h1 .glow {
+    color: var(--cyan);
+    text-shadow: 0 0 40px rgba(0,212,255,0.4);
+  }
+
+  .header-meta {
+    text-align: right;
+  }
+
+  .header-meta p {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1px;
+    max-width: 1160px;
+    margin: 0 auto;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--surface);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .card:hover { background: var(--surface2); }
+
+  .card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 20px; right: 24px;
+    font-family: var(--display);
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+  .card:hover::before { color: var(--border2); }
+
+  .card-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .card h2 {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .card .concept {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: center; }
+
+  input[type="text"], input[type="number"], textarea, select {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: var(--cyan); }
+
+  button {
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  button:hover { border-color: var(--cyan); color: var(--cyan); }
+  button:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #000;
+    font-weight: 700;
+  }
+  .btn-primary:hover { background: #00b8d9; border-color: #00b8d9; color: #000; }
+
+  .terminal {
+    background: #040710;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 12px 14px;
+    min-height: 44px;
+    line-height: 1.8;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+
+  .t-cyan   { color: var(--cyan); }
+  .t-green  { color: var(--green); }
+  .t-orange { color: var(--orange); }
+  .t-red    { color: var(--red); }
+  .t-purple { color: var(--purple); }
+  .t-muted  { color: var(--muted); }
+  .t-text   { color: var(--text); }
+
+  /* ── 1. Generators ── */
+  .gen-track {
+    display: flex; gap: 4px; flex-wrap: wrap; align-items: center;
+  }
+  .gen-val {
+    padding: 4px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    transition: all 0.3s;
+  }
+  .gen-val.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.08); }
+  .gen-val.past   { border-color: var(--border); color: var(--border2); }
+  .gen-cursor {
+    width: 2px; height: 18px;
+    background: var(--cyan);
+    animation: blink 0.8s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── 2. Proxy / Reactivity ── */
+  .reactive-field {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .reactive-field label {
+    font-size: 0.7rem; color: var(--muted); width: 70px; flex-shrink: 0;
+  }
+  .reactive-field input { flex: 1; }
+  .reactive-field .live {
+    font-size: 0.75rem; color: var(--green);
+    min-width: 80px; text-align: right;
+  }
+  #proxy-computed {
+    background: rgba(0,255,157,0.05);
+    border: 1px solid rgba(0,255,157,0.2);
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 0.8rem; line-height: 1.8;
+  }
+  #proxy-log { max-height: 80px; overflow-y: auto; }
+
+  /* ── 3. Virtual DOM diff ── */
+  .vdom-panel {
+    flex: 1; min-width: 0;
+  }
+  .vdom-panel h4 {
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .vdom-tree {
+    background: #040710; border: 1px solid var(--border2);
+    border-radius: 4px; padding: 10px; font-size: 0.72rem;
+    line-height: 1.9; min-height: 80px;
+  }
+  .vnode { color: var(--cyan); }
+  .vnode-changed { color: var(--orange); }
+  .vnode-new     { color: var(--green); }
+  .vnode-removed { color: var(--red); text-decoration: line-through; }
+  .patch-list { font-size: 0.72rem; line-height: 1.9; }
+
+  /* ── 4. Memoization ── */
+  .memo-bar-wrap { display: flex; gap: 6px; align-items: center; }
+  .memo-bar-label { font-size: 0.7rem; color: var(--muted); width: 56px; flex-shrink: 0; }
+  .memo-bar-bg { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .memo-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+  .memo-chart { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ── 5. Pub/Sub ── */
+  .channel {
+    border: 1px solid var(--border2); border-radius: 4px;
+    padding: 10px; font-size: 0.75rem;
+  }
+  .channel-name {
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .sub-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .sub-badge {
+    font-size: 0.65rem; padding: 2px 8px;
+    border-radius: 12px; border: 1px solid var(--border2);
+    color: var(--muted); transition: all 0.2s;
+  }
+  .sub-badge.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.1); }
+  #pubsub-log { max-height: 100px; overflow-y: auto; }
+
+  /* ── 6. Prototype chain ── */
+  .proto-chain {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .proto-node {
+    border: 1px solid var(--border2); border-radius: 4px;
+    padding: 10px 14px; font-size: 0.75rem;
+    position: relative;
+  }
+  .proto-node + .proto-node { margin-top: -1px; border-top-left-radius: 0; border-top-right-radius: 0; }
+  .proto-node:first-child { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .proto-node:not(:first-child):not(:last-child) { border-radius: 0; }
+  .proto-label { font-size: 0.65rem; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .proto-props { display: flex; flex-wrap: wrap; gap: 4px; }
+  .proto-prop {
+    font-size: 0.68rem; padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .own-prop  { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.2); }
+  .inh-prop  { background: rgba(168,85,247,0.1); color: var(--purple); border: 1px solid rgba(168,85,247,0.2); }
+  #proto-lookup-result { font-size: 0.78rem; min-height: 30px; }
+
+  /* ── 7. WeakMap / Memory ── */
+  .mem-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 10px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    font-size: 0.75rem; transition: opacity 0.4s;
+  }
+  .mem-item.gc'd { opacity: 0.3; border-style: dashed; }
+  .mem-addr { color: var(--muted); font-size: 0.68rem; }
+  #mem-list { display: flex; flex-direction: column; gap: 5px; max-height: 150px; overflow-y: auto; }
+
+  /* ── 8. Async Iterators / Streams ── */
+  .stream-item {
+    display: flex; gap: 10px; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.75rem; animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .stream-badge {
+    font-size: 0.62rem; padding: 1px 7px;
+    border-radius: 10px; flex-shrink: 0;
+  }
+  #stream-list { max-height: 140px; overflow-y: auto; }
+  .stream-progress {
+    height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 4px;
+  }
+  .stream-progress-fill {
+    height: 100%; background: var(--cyan);
+    transition: width 0.3s; border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>JS <span class="glow">Advanced</span></h1>
+    <div class="header-meta">
+      <p>Generators · Proxy / Reactivity</p>
+      <p>Virtual DOM · Memoization · Pub/Sub</p>
+      <p>Prototype Chain · WeakMap · Async Iterators</p>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- 1. GENERATORS -->
+  <div class="card" data-num="01">
+    <div class="card-tag">01 · Generators</div>
+    <h2>Lazy Sequence Engine</h2>
+    <p class="concept">Generators pause execution at <code style="color:var(--cyan)">yield</code>, resuming on demand. Infinite sequences with zero memory waste.</p>
+    <div class="col">
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <button onclick="genStep('fib')">Next Fibonacci</button>
+        <button onclick="genStep('primes')">Next Prime</button>
+        <button onclick="genReset()">Reset</button>
+      </div>
+      <div class="gen-track" id="gen-track">
+        <span class="t-muted" style="font-size:0.75rem">Press a button to start yielding values…</span>
+      </div>
+      <div class="terminal" id="gen-log"></div>
+    </div>
+  </div>
+
+  <!-- 2. PROXY / REACTIVITY -->
+  <div class="card" data-num="02">
+    <div class="card-tag">02 · Proxy + Reflect</div>
+    <h2>Reactive State Object</h2>
+    <p class="concept">A <code style="color:var(--cyan)">Proxy</code> intercepts every get/set on an object — the foundation of Vue 3's reactivity system.</p>
+    <div class="col">
+      <div class="reactive-field">
+        <label>firstName</label>
+        <input type="text" id="p-first" value="Ada" oninput="updateProxy()"/>
+        <span class="live" id="p-first-live">Ada</span>
+      </div>
+      <div class="reactive-field">
+        <label>lastName</label>
+        <input type="text" id="p-last" value="Lovelace" oninput="updateProxy()"/>
+        <span class="live" id="p-last-live">Lovelace</span>
+      </div>
+      <div class="reactive-field">
+        <label>age</label>
+        <input type="number" id="p-age" value="36" oninput="updateProxy()" style="max-width:80px"/>
+        <span class="live" id="p-age-live">36</span>
+      </div>
+      <div id="proxy-computed"></div>
+      <div class="terminal" id="proxy-log" style="max-height:80px"></div>
+    </div>
+  </div>
+
+  <!-- 3. VIRTUAL DOM DIFF -->
+  <div class="card" data-num="03">
+    <div class="card-tag">03 · Virtual DOM</div>
+    <h2>Diffing Algorithm</h2>
+    <p class="concept">React's core idea: diff two virtual trees, produce the minimal set of patches to apply to the real DOM.</p>
+    <div class="col">
+      <div class="row" style="gap:12px;align-items:flex-start">
+        <div class="vdom-panel">
+          <h4>Old VTree</h4>
+          <div class="vdom-tree" id="vdom-old"></div>
+        </div>
+        <div class="vdom-panel">
+          <h4>New VTree</h4>
+          <div class="vdom-tree" id="vdom-new"></div>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Patches</div>
+      <div class="terminal patch-list" id="vdom-patches"></div>
+      <button class="btn-primary" onclick="runDiff()">Generate New Trees & Diff</button>
+    </div>
+  </div>
+
+  <!-- 4. MEMOIZATION -->
+  <div class="card" data-num="04">
+    <div class="card-tag">04 · Memoization</div>
+    <h2>Cache-Powered Compute</h2>
+    <p class="concept">A generic <code style="color:var(--cyan)">memoize()</code> wrapper caches results by argument. Measure the speedup yourself.</p>
+    <div class="col">
+      <div class="row">
+        <input type="number" id="memo-n" value="38" min="1" max="45" placeholder="n (try 35–45)"/>
+        <button class="btn-primary" onclick="runMemo()">Compute</button>
+      </div>
+      <div class="memo-chart" id="memo-chart"></div>
+      <div class="terminal" id="memo-log"></div>
+    </div>
+  </div>
+
+  <!-- 5. PUB / SUB -->
+  <div class="card" data-num="05">
+    <div class="card-tag">05 · Pub/Sub Event Bus</div>
+    <h2>Decoupled Messaging</h2>
+    <p class="concept">Components never know about each other. They only talk through named channels. Foundation of Redux, RxJS, and most state systems.</p>
+    <div class="col">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="psPublish('user:login', {name:'Amine'})">Publish user:login</button>
+        <button onclick="psPublish('data:update', {count: Math.floor(Math.random()*100)})">Publish data:update</button>
+        <button onclick="psPublish('error:404', {path:'/api/x'})">Publish error:404</button>
+      </div>
+      <div id="ps-channels" class="col" style="gap:8px"></div>
+      <div class="terminal" id="pubsub-log"></div>
+    </div>
+  </div>
+
+  <!-- 6. PROTOTYPE CHAIN -->
+  <div class="card" data-num="06">
+    <div class="card-tag">06 · Prototype Chain</div>
+    <h2>Inheritance Visualizer</h2>
+    <p class="concept">JS classes are syntactic sugar over prototypes. This shows the actual chain <code style="color:var(--cyan)">instanceof</code> traverses.</p>
+    <div class="col">
+      <div class="proto-chain" id="proto-chain"></div>
+      <div class="row">
+        <input type="text" id="proto-lookup" placeholder="Look up a property…"/>
+        <button onclick="protoLookup()">Find</button>
+      </div>
+      <div id="proto-lookup-result" class="terminal"></div>
+    </div>
+  </div>
+
+  <!-- 7. WEAKMAP / MEMORY -->
+  <div class="card" data-num="07">
+    <div class="card-tag">07 · WeakMap & GC</div>
+    <h2>Memory-Safe Metadata</h2>
+    <p class="concept"><code style="color:var(--cyan)">WeakMap</code> holds object references weakly — when the object is GC'd, its entry disappears. No leaks.</p>
+    <div class="col">
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <button onclick="memCreate()">Create Object</button>
+        <button onclick="memGC()">Simulate GC</button>
+        <button onclick="memReadAll()">Read All</button>
+      </div>
+      <div id="mem-list"></div>
+      <div class="terminal" id="mem-log"></div>
+    </div>
+  </div>
+
+  <!-- 8. ASYNC ITERATORS -->
+  <div class="card" data-num="08">
+    <div class="card-tag">08 · Async Iterators</div>
+    <h2>Simulated Data Stream</h2>
+    <p class="concept"><code style="color:var(--cyan)">for await...of</code> consumes an async generator — each item arrives when ready. Think SSE, WebSockets, file streams.</p>
+    <div class="col">
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <button class="btn-primary" onclick="startStream()">Start Stream</button>
+        <button onclick="stopStream()">Stop</button>
+        <button onclick="document.getElementById('stream-list').innerHTML=''">Clear</button>
+      </div>
+      <div class="stream-progress"><div class="stream-progress-fill" id="stream-prog" style="width:0%"></div></div>
+      <div id="stream-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// 1. GENERATORS — Lazy Sequences
+// ════════════════════════════════════════════════════════
+function* fibonacci() {
+  let [a, b] = [0, 1];
+  while (true) { yield a; [a, b] = [b, a + b]; }
+}
+
+function* primes() {
+  function isPrime(n) {
+    if (n < 2) return false;
+    for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+    return true;
+  }
+  let n = 2;
+  while (true) { if (isPrime(n)) yield n; n++; }
+}
+
+const gens = { fib: fibonacci(), primes: primes() };
+const genHistory = { fib: [], primes: [] };
+let activeGen = null;
+
+function genStep(type) {
+  activeGen = type;
+  const val = gens[type].next().value;
+  genHistory[type].push(val);
+  renderGenTrack(type, val);
+  const log = document.getElementById('gen-log');
+  const line = document.createElement('div');
+  line.innerHTML = `<span class="t-muted">${type}.</span><span class="t-cyan">next()</span> <span class="t-muted">→</span> <span class="t-green">{ value: ${val}, done: false }</span>`;
+  log.prepend(line);
+  if (log.children.length > 6) log.removeChild(log.lastChild);
+}
+
+function renderGenTrack(type, latest) {
+  const track = document.getElementById('gen-track');
+  const hist = genHistory[type].slice(-8);
+  track.innerHTML = hist.map((v, i) =>
+    `<div class="gen-val ${i === hist.length-1 ? 'active' : 'past'}">${v}</div>`
+  ).join('') + '<div class="gen-cursor"></div>';
+}
+
+function genReset() {
+  gens.fib = fibonacci(); gens.primes = primes();
+  genHistory.fib = []; genHistory.primes = [];
+  document.getElementById('gen-track').innerHTML = '<span class="t-muted" style="font-size:0.75rem">Generators reset.</span>';
+  document.getElementById('gen-log').innerHTML = '';
+}
+
+// ════════════════════════════════════════════════════════
+// 2. PROXY — Reactive State
+// ════════════════════════════════════════════════════════
+let proxyLogCount = 0;
+
+function makeReactive(target, onChange) {
+  return new Proxy(target, {
+    get(obj, prop) {
+      return Reflect.get(obj, prop);
+    },
+    set(obj, prop, value) {
+      const old = obj[prop];
+      const result = Reflect.set(obj, prop, value);
+      if (old !== value) onChange(prop, old, value);
+      return result;
+    }
+  });
+}
+
+const rawState = { firstName: 'Ada', lastName: 'Lovelace', age: 36 };
+
+const state = makeReactive(rawState, (prop, oldVal, newVal) => {
+  proxyLogCount++;
+  const log = document.getElementById('proxy-log');
+  const line = document.createElement('div');
+  line.innerHTML = `<span class="t-muted">[trap #${proxyLogCount}]</span> <span class="t-cyan">${prop}</span> <span class="t-muted">"${oldVal}"</span> <span class="t-muted">→</span> <span class="t-green">"${newVal}"</span>`;
+  log.prepend(line);
+  if (log.children.length > 5) log.removeChild(log.lastChild);
+  renderProxyComputed();
+});
+
+function renderProxyComputed() {
+  const s = state;
+  document.getElementById('p-first-live').textContent = s.firstName;
+  document.getElementById('p-last-live').textContent = s.lastName;
+  document.getElementById('p-age-live').textContent = s.age;
+  document.getElementById('proxy-computed').innerHTML = `
+    <span class="t-muted">fullName</span> <span class="t-muted">→</span> <span class="t-cyan">${s.firstName} ${s.lastName}</span><br>
+    <span class="t-muted">initials</span> <span class="t-muted">→</span> <span class="t-cyan">${s.firstName[0]||''}${s.lastName[0]||''}</span><br>
+    <span class="t-muted">isAdult</span>  <span class="t-muted">→</span> <span class="t-green">${s.age >= 18}</span>
+  `;
+}
+
+function updateProxy() {
+  state.firstName = document.getElementById('p-first').value;
+  state.lastName  = document.getElementById('p-last').value;
+  state.age       = Number(document.getElementById('p-age').value);
+}
+
+renderProxyComputed();
+
+// ════════════════════════════════════════════════════════
+// 3. VIRTUAL DOM DIFF
+// ════════════════════════════════════════════════════════
+const vTags = ['div', 'span', 'p', 'h2', 'ul', 'section', 'article', 'header'];
+const vTexts = ['Hello', 'World', 'Click me', 'Loading…', 'Done', 'Error', 'Submit', 'Cancel'];
+
+function randomVNode(depth = 0) {
+  const tag = vTags[Math.floor(Math.random() * vTags.length)];
+  const text = vTexts[Math.floor(Math.random() * vTexts.length)];
+  const children = depth < 2 && Math.random() > 0.5
+    ? [randomVNode(depth + 1)]
+    : [];
+  return { tag, text, children, key: Math.random().toString(36).slice(2, 6) };
+}
+
+function renderVTree(node, indent = 0) {
+  const pad = '  '.repeat(indent);
+  const tag = `<span class="vnode">&lt;${node.tag}&gt;</span>`;
+  const text = `<span class="t-muted">${node.text}</span>`;
+  const close = `<span class="vnode">&lt;/${node.tag}&gt;</span>`;
+  let html = `${pad}${tag}${text}`;
+  if (node.children.length) {
+    html += '<br>' + node.children.map(c => renderVTree(c, indent+1)).join('<br>') + `<br>${pad}${close}`;
+  } else {
+    html += close;
+  }
+  return html;
+}
+
+function diff(oldNode, newNode) {
+  const patches = [];
+  if (!oldNode) { patches.push({ type: 'CREATE', node: newNode }); return patches; }
+  if (!newNode) { patches.push({ type: 'REMOVE', node: oldNode }); return patches; }
+  if (oldNode.tag !== newNode.tag) {
+    patches.push({ type: 'REPLACE', old: oldNode.tag, new: newNode.tag });
+    return patches;
+  }
+  if (oldNode.text !== newNode.text) {
+    patches.push({ type: 'TEXT', tag: oldNode.tag, old: oldNode.text, new: newNode.text });
+  }
+  const maxLen = Math.max(oldNode.children.length, newNode.children.length);
+  for (let i = 0; i < maxLen; i++) {
+    patches.push(...diff(oldNode.children[i], newNode.children[i]));
+  }
+  return patches;
+}
+
+function runDiff() {
+  const oldTree = randomVNode();
+  const newTree = randomVNode();
+
+  document.getElementById('vdom-old').innerHTML = renderVTree(oldTree);
+  document.getElementById('vdom-new').innerHTML = renderVTree(newTree);
+
+  const patches = diff(oldTree, newTree);
+  const patchEl = document.getElementById('vdom-patches');
+
+  if (patches.length === 0) {
+    patchEl.innerHTML = '<span class="t-green">✓ No patches needed — trees are identical</span>';
+    return;
+  }
+
+  patchEl.innerHTML = patches.map(p => {
+    if (p.type === 'CREATE') return `<span class="t-green">+ CREATE &lt;${p.node.tag}&gt;</span>`;
+    if (p.type === 'REMOVE') return `<span class="t-red">- REMOVE &lt;${p.node.tag}&gt;</span>`;
+    if (p.type === 'REPLACE') return `<span class="t-orange">~ REPLACE &lt;${p.old}&gt; → &lt;${p.new}&gt;</span>`;
+    if (p.type === 'TEXT')   return `<span class="t-cyan">✎ TEXT in &lt;${p.tag}&gt;: "${p.old}" → "${p.new}"</span>`;
+    return '';
+  }).join('<br>');
+}
+
+runDiff();
+
+// ════════════════════════════════════════════════════════
+// 4. MEMOIZATION
+// ════════════════════════════════════════════════════════
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return { value: cache.get(key), hit: true };
+    const value = fn.apply(this, args);
+    cache.set(key, value);
+    return { value, hit: false };
+  };
+}
+
+function slowFib(n) {
+  if (n <= 1) return n;
+  return slowFib(n-1) + slowFib(n-2);
+}
+
+const memoFib = memoize(function(n) {
+  if (n <= 1) return n;
+  const a = memoFib(n-1); const b = memoFib(n-2);
+  return a.value + b.value;
+});
+
+function runMemo() {
+  const n = Math.min(45, Math.max(1, parseInt(document.getElementById('memo-n').value) || 38));
+  const chart = document.getElementById('memo-chart');
+  const log = document.getElementById('memo-log');
+
+  log.innerHTML = '<span class="t-muted">Computing…</span>';
+
+  setTimeout(() => {
+    const t1 = performance.now();
+    const rawResult = slowFib(n);
+    const rawTime = performance.now() - t1;
+
+    const t2 = performance.now();
+    const memoResult = memoFib(n).value;
+    const memoTime = performance.now() - t2;
+
+    const maxTime = Math.max(rawTime, 0.01);
+    const speedup = rawTime > 0 ? (rawTime / Math.max(memoTime, 0.001)).toFixed(0) : '∞';
+
+    chart.innerHTML = `
+      <div class="memo-bar-wrap">
+        <span class="memo-bar-label">Raw</span>
+        <div class="memo-bar-bg"><div class="memo-bar-fill" style="width:100%;background:var(--red)"></div></div>
+        <span style="font-size:0.7rem;color:var(--red);min-width:70px;text-align:right">${rawTime.toFixed(2)}ms</span>
+      </div>
+      <div class="memo-bar-wrap">
+        <span class="memo-bar-label">Memoized</span>
+        <div class="memo-bar-bg"><div class="memo-bar-fill" style="width:${Math.min(100,(memoTime/maxTime)*100)}%;background:var(--green)"></div></div>
+        <span style="font-size:0.7rem;color:var(--green);min-width:70px;text-align:right">${memoTime.toFixed(3)}ms</span>
+      </div>
+    `;
+
+    log.innerHTML = `
+      <span class="t-muted">fib(${n})</span> <span class="t-muted">=</span> <span class="t-cyan">${rawResult}</span><br>
+      <span class="t-green">✓ ${speedup}× faster</span> <span class="t-muted">with memoization</span>
+    `;
+  }, 10);
+}
+
+runMemo();
+
+// ════════════════════════════════════════════════════════
+// 5. PUB / SUB
+// ════════════════════════════════════════════════════════
+class EventBus {
+  #listeners = new Map();
+  subscribe(event, cb) {
+    if (!this.#listeners.has(event)) this.#listeners.set(event, []);
+    this.#listeners.get(event).push(cb);
+    return () => this.unsubscribe(event, cb); // returns unsub fn
+  }
+  unsubscribe(event, cb) {
+    const listeners = this.#listeners.get(event) || [];
+    this.#listeners.set(event, listeners.filter(l => l !== cb));
+  }
+  publish(event, data) {
+    const listeners = this.#listeners.get(event) || [];
+    listeners.forEach(cb => cb(data));
+    return listeners.length;
+  }
+  get channels() { return [...this.#listeners.keys()]; }
+  subscriberCount(event) { return (this.#listeners.get(event) || []).length; }
+}
+
+const bus = new EventBus();
+let psLogCount = 0;
+
+const psComponents = {
+  'user:login':    ['AuthGuard', 'Analytics', 'WelcomeModal'],
+  'data:update':   ['Dashboard', 'Sidebar'],
+  'error:404':     ['ErrorBoundary', 'Logger'],
+};
+
+Object.entries(psComponents).forEach(([event, subs]) => {
+  subs.forEach(sub => {
+    bus.subscribe(event, (data) => {
+      psLogCount++;
+      const log = document.getElementById('pubsub-log');
+      const line = document.createElement('div');
+      line.innerHTML = `<span class="t-muted">[${psLogCount}]</span> <span class="t-cyan">${sub}</span> <span class="t-muted">received</span> <span class="t-orange">${event}</span> <span class="t-muted">${JSON.stringify(data)}</span>`;
+      log.prepend(line);
+      if (log.children.length > 10) log.removeChild(log.lastChild);
+    });
+  });
+});
+
+function renderPSChannels() {
+  document.getElementById('ps-channels').innerHTML = Object.entries(psComponents).map(([event, subs]) => `
+    <div class="channel">
+      <div class="channel-name">${event} (${bus.subscriberCount(event)} subscribers)</div>
+      <div class="sub-list">${subs.map(s => `<span class="sub-badge" id="badge-${s.replace(/\W/g,'')}">${s}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function psPublish(event, data) {
+  const subs = psComponents[event] || [];
+  subs.forEach(s => {
+    const badge = document.getElementById('badge-' + s.replace(/\W/g,''));
+    if (badge) {
+      badge.classList.add('active');
+      setTimeout(() => badge.classList.remove('active'), 600);
+    }
+  });
+  bus.publish(event, data);
+}
+
+renderPSChannels();
+
+// ════════════════════════════════════════════════════════
+// 6. PROTOTYPE CHAIN
+// ════════════════════════════════════════════════════════
+class Animal {
+  constructor(name) { this.name = name; }
+  breathe() { return `${this.name} breathes`; }
+  toString() { return `[Animal: ${this.name}]`; }
+}
+
+class Mammal extends Animal {
+  constructor(name, furColor) {
+    super(name);
+    this.furColor = furColor;
+  }
+  nurse() { return `${this.name} nurses young`; }
+}
+
+class Dog extends Mammal {
+  constructor(name) { super(name, 'brown'); }
+  bark() { return `${this.name} says: Woof!`; }
+  fetch() { return `${this.name} fetches the ball`; }
+}
+
+const rex = new Dog('Rex');
+
+const chainData = [
+  { label: 'rex (Dog instance)', props: Object.getOwnPropertyNames(rex), type: 'own' },
+  { label: 'Dog.prototype', props: Object.getOwnPropertyNames(Dog.prototype).filter(p=>p!=='constructor'), type: 'inh' },
+  { label: 'Mammal.prototype', props: Object.getOwnPropertyNames(Mammal.prototype).filter(p=>p!=='constructor'), type: 'inh' },
+  { label: 'Animal.prototype', props: Object.getOwnPropertyNames(Animal.prototype).filter(p=>p!=='constructor'), type: 'inh' },
+  { label: 'Object.prototype', props: ['hasOwnProperty','toString','valueOf','…'], type: 'inh' },
+];
+
+document.getElementById('proto-chain').innerHTML = chainData.map(layer => `
+  <div class="proto-node">
+    <div class="proto-label">${layer.label}</div>
+    <div class="proto-props">
+      ${layer.props.map(p => `<span class="proto-prop ${layer.type === 'own' ? 'own-prop' : 'inh-prop'}">${p}</span>`).join('')}
+    </div>
+  </div>
+`).join('');
+
+function protoLookup() {
+  const prop = document.getElementById('proto-lookup').value.trim();
+  const result = document.getElementById('proto-lookup-result');
+  if (!prop) { result.innerHTML = ''; return; }
+
+  for (let i = 0; i < chainData.length; i++) {
+    if (chainData[i].props.includes(prop)) {
+      result.innerHTML = `<span class="t-green">✓ Found</span> <span class="t-cyan">${prop}</span> <span class="t-muted">at</span> <span class="t-orange">${chainData[i].label}</span>`;
+      return;
+    }
+  }
+  result.innerHTML = `<span class="t-red">✕ "${prop}" not found in chain</span>`;
+}
+
+document.getElementById('proto-lookup').addEventListener('keydown', e => { if(e.key==='Enter') protoLookup(); });
+
+// ════════════════════════════════════════════════════════
+// 7. WEAKMAP — Memory-Safe Metadata
+// ════════════════════════════════════════════════════════
+const metaStore = new WeakMap();
+let memObjects = [];
+let memIdSeq = 0;
+
+function memCreate() {
+  const obj = { id: ++memIdSeq, name: `obj_${memIdSeq}` };
+  metaStore.set(obj, {
+    createdAt: Date.now(),
+    accessCount: 0,
+    metadata: `Meta for obj_${memIdSeq}`
+  });
+  memObjects.push(obj);
+  renderMemList();
+  const log = document.getElementById('mem-log');
+  log.innerHTML = `<span class="t-green">+ Created</span> <span class="t-cyan">obj_${memIdSeq}</span> <span class="t-muted">— WeakMap entry attached silently</span>`;
+}
+
+function memGC() {
+  if (memObjects.length === 0) {
+    document.getElementById('mem-log').innerHTML = '<span class="t-muted">Nothing to GC</span>';
+    return;
+  }
+  const removed = memObjects.shift(); // dereference
+  renderMemList(removed.id);
+  setTimeout(() => {
+    renderMemList();
+    document.getElementById('mem-log').innerHTML =
+      `<span class="t-orange">GC'd</span> <span class="t-cyan">obj_${removed.id}</span> <span class="t-muted">— WeakMap entry auto-deleted (no strong ref left)</span>`;
+  }, 800);
+}
+
+function memReadAll() {
+  const log = document.getElementById('mem-log');
+  if (memObjects.length === 0) {
+    log.innerHTML = '<span class="t-muted">No live objects</span>';
+    return;
+  }
+  log.innerHTML = memObjects.map(o => {
+    const meta = metaStore.get(o);
+    meta.accessCount++;
+    return `<span class="t-cyan">obj_${o.id}</span> <span class="t-muted">→ access #${meta.accessCount}, age: ${Date.now() - meta.createdAt}ms</span>`;
+  }).join('<br>');
+}
+
+function renderMemList(gcingId = null) {
+  const list = document.getElementById('mem-list');
+  const allIds = [...memObjects.map(o => o.id)];
+  if (gcingId) allIds.unshift(gcingId);
+
+  list.innerHTML = [...(gcingId ? [gcingId] : []), ...memObjects.map(o=>o.id)].map(id => {
+    const isGcing = id === gcingId;
+    return `
+      <div class="mem-item ${isGcing ? "gc'd" : ''}">
+        <span class="t-cyan">obj_${id}</span>
+        <span class="mem-addr">0x${(id * 0xdeadbeef % 0xffffff).toString(16).padStart(6,'0')}</span>
+        <span style="font-size:0.65rem;color:${isGcing ? 'var(--red)' : 'var(--green)'}">
+          ${isGcing ? 'DEREFERENCED' : 'LIVE'}
+        </span>
+      </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// 8. ASYNC ITERATORS / STREAMS
+// ════════════════════════════════════════════════════════
+const streamTypes = [
+  { label: 'USER_EVENT',  color: 'var(--cyan)',   bg: 'rgba(0,212,255,0.1)' },
+  { label: 'DB_QUERY',    color: 'var(--green)',  bg: 'rgba(0,255,157,0.1)' },
+  { label: 'API_CALL',    color: 'var(--orange)', bg: 'rgba(255,140,66,0.1)' },
+  { label: 'SYSTEM',      color: 'var(--purple)', bg: 'rgba(168,85,247,0.1)' },
+  { label: 'ERROR',       color: 'var(--red)',    bg: 'rgba(255,71,87,0.1)' },
+];
+const streamPayloads = ['payload_a3f','req_id_992','session_x1','query_opt','token_exp','fetch_ok','batch_7','sync_done'];
+
+let streamRunning = false;
+let streamCount = 0;
+const STREAM_TOTAL = 20;
+
+async function* dataStream() {
+  while (streamRunning && streamCount < STREAM_TOTAL) {
+    await new Promise(r => setTimeout(r, 200 + Math.random() * 400));
+    if (!streamRunning) return;
+    const type = streamTypes[Math.floor(Math.random() * streamTypes.length)];
+    const payload = streamPayloads[Math.floor(Math.random() * streamPayloads.length)];
+    yield { ...type, payload, seq: ++streamCount };
+  }
+}
+
+async function startStream() {
+  stopStream();
+  streamRunning = true;
+  streamCount = 0;
+  document.getElementById('stream-prog').style.width = '0%';
+
+  for await (const event of dataStream()) {
+    const list = document.getElementById('stream-list');
+    const item = document.createElement('div');
+    item.className = 'stream-item';
+    item.innerHTML = `
+      <span class="stream-badge" style="color:${event.color};background:${event.bg};border:1px solid ${event.color}40">${event.label}</span>
+      <span class="t-muted" style="font-size:0.7rem">#${event.seq}</span>
+      <span style="color:var(--text);font-size:0.75rem">${event.payload}</span>
+      <span class="t-muted" style="font-size:0.68rem;margin-left:auto">${new Date().toISOString().slice(11,23)}</span>
+    `;
+    list.prepend(item);
+    if (list.children.length > 12) list.removeChild(list.lastChild);
+    document.getElementById('stream-prog').style.width = `${(streamCount / STREAM_TOTAL) * 100}%`;
+  }
+
+  if (streamCount >= STREAM_TOTAL) {
+    const list = document.getElementById('stream-list');
+    const done = document.createElement('div');
+    done.innerHTML = '<span class="t-green" style="font-size:0.75rem">✓ Stream complete — async iterator exhausted</span>';
+    done.style.padding = '6px 0';
+    list.prepend(done);
+  }
+  streamRunning = false;
+}
+
+function stopStream() {
+  streamRunning = false;
+}
+</script>
+</body>
+</html>
