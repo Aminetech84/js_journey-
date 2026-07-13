@@ -10,4 +10,13 @@
   --sans: "Syne", sans-serif;
   */
   
+#char-box {
+  position: relative;
+}
+
+#char-area {
+  resize: none;
   
+}
+
+
