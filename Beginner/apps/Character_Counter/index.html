@@ -1,14 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="style.css" />
     <title></title>
-</head>
-<body>
-   
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-tag">01 . DOM Manipulation</div>
+      <h2>Character Counter</h2>
+      <div class="col">
+        <textarea
+          id="char-area"
+          placeholder="Start typing anything..."
+        ></textarea>
+        <div id="char-stats">
+          <div class="stat">
+            <span id="char-count" class="stat-val">0</span
+            ><span class="stat-lbl">CHARS</span>
+          </div>
+          <div class="stat">
+            <span id="word-count" class="stat-val">0</span
+            ><span class="stat-lbl">WORDS</span>
+          </div>
+          <div class="stat">
+            <span id="line-count" class="stat-val">1</span
+            ><span class="stat-lbl">LINES</span>
+          </div>
+          <div class="stat">
+            <span id="read-time" class="stat-val">0s</span
+            ><span class="stat-lbl">READ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
