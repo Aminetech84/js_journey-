@@ -1,13 +1,24 @@
-/*
-  --bg: #0d0d0d;
-  --surface: #161616;
-  --border: #2a2a2a;
-  --accent: #e8ff47;
-  --accent2: #ff6b35;
-  --text: #f0f0f0;
-  --muted: #666;
-  --mono: "JetBrains Mono", monospace;
-  --sans: "Syne", sans-serif;
-  */
-  
-  
+#sw-display {
+  font-family: var(--mono);
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  text-align: center;
+  padding: 12px 0;
+}
+
+#sw-laps {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.lap {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 3px 0;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  justify-content: space-between;
+}

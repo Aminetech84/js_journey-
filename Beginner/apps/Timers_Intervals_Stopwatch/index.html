@@ -1,14 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="style.css" />
     <title></title>
-</head>
-<body>
-   
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-tag">04 . setInterval</div>
+      <h2>Stopwatch</h2>
+      <div class="col">
+        <div id="sw-display">00:00.00</div>
+        <div class="row" style="justify-content: center; gap: 10px">
+          <button id="sw-btn" onclick="swToggle()">Start</button>
+          <button class="btn-ghost" onclick="swLap()">Lap</button>
+          <button class="btn-ghost" onclick="swReset()">Reset</button>
+        </div>
+        <div id="sw-laps"></div>
+      </div>
+    </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
