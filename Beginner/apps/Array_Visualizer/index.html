@@ -1,14 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="style.css" />
     <title></title>
-</head>
-<body>
-   
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-tag">05 . Array Methods</div>
+      <h2>Array Visualizer</h2>
+      <div class="col">
+        <div class="row">
+          <input
+            type="number"
+            id="arr-input"
+            placeholder="Add number..."
+            style="max-width: 140px"
+          />
+          <button onclick="arrAdd()">Push</button>
+          <button class="btn-ghost" onclick="arrPop()">Pop</button>
+        </div>
+        <div id="arr-display">
+          <span
+            style="
+              color: var(--muted);
+              font-family: var(--mono);
+              font-size: 0.8rem;
+            "
+            >[ empty ]</span
+          >
+        </div>
+        <div class="row" style="flex-wrap: wrap; gap: 6px">
+          <button
+            class="btn-ghost"
+            style="font-size: 0.75rem; padding: 6px 10px"
+            onclick="arrMethod('sort')"
+          >
+            Sort
+          </button>
+          <button
+            class="btn-ghost"
+            style="font-size: 0.75rem; padding: 6px 10px"
+            onclick="arrMethod('reverse')"
+          >
+            Reverse
+          </button>
+          <button
+            class="btn-ghost"
+            style="font-size: 0.75rem; padding: 6px 10px"
+            onclick="arrMethod('filter-even')"
+          >
+            Filter Even
+          </button>
+          <button
+            class="btn-ghost"
+            style="font-size: 0.75rem; padding: 6px 10px"
+            onclick="arrMethod('map-x2')"
+          >
+            Map x2
+          </button>
+          <button
+            class="btn-ghost"
+            style="font-size: 0.75rem; padding: 6px 10px"
+            onclick="arrMethod('sum')"
+          >
+            Sum
+          </button>
+        </div>
+        <div id="arr-log"></div>
+      </div>
+    </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
