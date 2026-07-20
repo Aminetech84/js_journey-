@@ -1,14 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="style.css" />
     <title></title>
-</head>
-<body>
-   
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-tag">06 . CSS + JS</div>
+      <h2>RGB Color Mixer</h2>
+      <div class="col">
+        <div id="color-preview"></div>
+        <div class="color-sliders col" style="gap: 8px">
+          <div>
+            <label>R <span id="r-val">128</span></label>
+            <input
+              type="range"
+              id="r-slider"
+              min="0"
+              max="255"
+              value="128"
+              oninput="updateColor()"
+            />
+          </div>
+          <div>
+            <label>G <span id="g-val">128</span></label>
+            <input
+              type="range"
+              id="g-slider"
+              min="0"
+              max="255"
+              value="128"
+              oninput="updateColor()"
+            />
+          </div>
+          <div>
+            <label>B <span id="b-val">128</span></label>
+            <input
+              type="range"
+              id="b-slider"
+              min="0"
+              max="255"
+              value="128"
+              oninput="updateColor()"
+            />
+          </div>
+        </div>
+        <div
+          class="row"
+          style="justify-content: space-between; align-items: center"
+        >
+          <span id="color-hex">#808080</span>
+          <button onclick="copyHex()">Copy HEX</button>
+        </div>
+      </div>
+    </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
