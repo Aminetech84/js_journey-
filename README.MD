@@ -1,0 +1,1 @@
+### JavaScript Projects suggested by Claude to reclaim the language divided into Beginner, Intermediate and Advanced  
