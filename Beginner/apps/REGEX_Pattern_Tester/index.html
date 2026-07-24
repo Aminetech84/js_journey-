@@ -8,7 +8,16 @@
     <title></title>
 </head>
 <body>
-   
+   <div class="card">
+    <div class="card-tag">07 . RegEx</div>
+    <h2>Pattern Tester</h2>
+    <div class="col">
+        <input type="text" id="regex-pattern" placeholder="Regex pattern (e.g. \d+)" oninput="testRegex()">
+        <input type="text" id="regex-input" placeholder="Test Starting..." oninput="testRegex()">
+        <div id="regex-highlight">Matches will highlight here</div>
+        <div id="regex-count"></div>
+    </div>
+   </div>
     <script src="script.js"></script>
 </body>
 </html>

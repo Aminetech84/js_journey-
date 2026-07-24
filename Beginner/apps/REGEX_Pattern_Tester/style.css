@@ -1,13 +1,24 @@
-/*
-  --bg: #0d0d0d;
-  --surface: #161616;
-  --border: #2a2a2a;
-  --accent: #e8ff47;
-  --accent2: #ff6b35;
-  --text: #f0f0f0;
-  --muted: #666;
-  --mono: "JetBrains Mono", monospace;
-  --sans: "Syne", sans-serif;
-  */
-  
-  
+#regex-highlight {
+  background: #111;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  min-height: 44px;
+  line-height: 1.8;
+  word-break: break-all;
+}
+
+mark {
+  background: var(--accent);
+  color: #000;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+#regex-count {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
